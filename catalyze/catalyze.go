@@ -84,6 +84,16 @@ func Run() {
 
 	var app = cli.App("catalyze", fmt.Sprintf("Catalyze CLI. Version %s", config.VERSION))
 
+	settings := &models.Settings{}
+	InitGlobalOpts(app, settings)
+	InitCLI(app, settings)
+
+	app.Run(os.Args)
+}
+
+// InitGlobalOpts adds in all the global options to the CLI instance. These are flags that come
+// after "catalyze" but before any commands and subcommands.
+func InitGlobalOpts(app *cli.Cli, settings *models.Settings) {
 	accountsHost := os.Getenv(config.AccountsHostEnvVar)
 	if accountsHost == "" {
 		accountsHost = config.AccountsHost
@@ -119,7 +129,6 @@ func Run() {
 			logrus.SetLevel(lvl)
 		}
 	}
-	settings := &models.Settings{}
 
 	app.Before = func() {
 		r := config.FileSettingsRetriever{}
@@ -142,8 +151,6 @@ func Run() {
 		config.SaveSettings(settings)
 	}
 
-	InitCLI(app, settings)
-
 	versionString := fmt.Sprintf("version %s %s", config.VERSION, config.ArchString())
 	logrus.Debugln(versionString)
 	app.Version("v version", versionString)
@@ -152,8 +159,6 @@ func Run() {
 			fmt.Println(versionString)
 		}
 	})
-
-	app.Run(os.Args)
 }
 
 // InitLogrus sets up logrus for the correctly formatted log messages

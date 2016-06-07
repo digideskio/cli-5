@@ -1,11 +1,9 @@
-package associate
+package certs
 
 /*var (
-	settings *models.Settings
-	//once         sync.Once
+	settings     *models.Settings
 	r            = config.FileSettingsRetriever{}
 	validEnvName = os.Getenv("ENV_NAME")
-	//pod          = os.Getenv("POD")
 )
 
 const (
@@ -18,27 +16,17 @@ const (
 
 func TestMain(m *testing.M) {
 	flag.Parse()
-	if stderr, err := initGitRepo(); err != nil {
-		panic(errors.New(string(stderr)))
-	}
+	settings = r.GetSettings(os.Getenv(config.CatalyzeEnvironmentEnvVar), "", os.Getenv(config.AccountsHostEnvVar), os.Getenv(config.AuthHostEnvVar), "", os.Getenv(config.PaasHostEnvVar), "", os.Getenv(config.CatalyzeUsernameEnvVar), os.Getenv(config.CatalyzePasswordEnvVar))
 	os.Exit(m.Run())
 }
 
-func initGitRepo() ([]byte, error) {
-	return exec.Command("git", "init").Output()
-}
-
-func initSettings() {
-	settings = r.GetSettings(os.Getenv(config.CatalyzeEnvironmentEnvVar), "", os.Getenv(config.AccountsHostEnvVar), os.Getenv(config.AuthHostEnvVar), "", os.Getenv(config.PaasHostEnvVar), "", os.Getenv(config.CatalyzeUsernameEnvVar), os.Getenv(config.CatalyzePasswordEnvVar))
-}
-
-var associateTests = []struct {
-	envLabel   string
-	svcLabel   string
-	alias      string
-	remote     string
-	defaultEnv bool
-	expectErr  bool
+var createTests = []struct {
+	name        string
+	pubKeyPath  string
+	privKeyPath string
+	selfSigned  bool
+	resolve     bool
+	expectErr   bool
 }{
 	{validEnvName, validSvcName, alias, "", false, false},
 	{invalidEnvName, validSvcName, alias, "", false, true},
